@@ -1,5 +1,5 @@
 // URL del endpoint en el ESP8266 (reemplaza con la IP de tu ESP8266)
-const url = 'http://192.168.1.100/get-data';
+const url = 'http://192.168.1.107/get-data';
 
 // Función para obtener y mostrar los datos
 async function fetchData() {
