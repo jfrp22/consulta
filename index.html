@@ -1,64 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Ubidots</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    h1 {
-      color: #333;
-    }
-    #valor {
-      font-size: 2em;
-      color: #007BFF;
-    }
-  </style>
-</head>
+<html>
 <body>
-  <h1>Valor de la Variable en Ubidots</h1>
-  <div id="valor">Cargando...</div>
+  <h1>Control de Luz</h1>
+  <button onclick="sendCommand('ON')">Encender LED</button>
+  <button onclick="sendCommand('OFF')">Apagar LED</button>
+  <h2>Temperatura:</h2>
+  <div id="datos"></div>
 
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
-    // Configuración de Ubidots
-    const token = "BBUS-V7JMzpMEIdVLretQygKXNShyj66Bhk"; // Reemplaza con tu token
-    const variableId = "67d5bb3cf514bf37043e414c"; // Reemplaza con el ID de tu variable
+    // Conectar al broker MQTT (WebSocket)
+    const client = mqtt.connect("wss://test.mosquitto.org:8081/mqtt");
 
-    // URL de la API de Ubidots
-    const url = `https://industrial.api.ubidots.com/api/v1.6/variables/${67d5bb3d07ad043887268a67}/values?page_size=1`;
+    // Suscribirse al tópico de temperatura
+    client.subscribe("casa/sala/temperatura");
 
-    // Función para obtener el valor de la variable
-    async function obtenerValor() {
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "X-Auth-Token": "BBUS-V7JMzpMEIdVLretQygKXNShyj66Bhk",
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al obtener los datos");
-        }
-
-        const data = await response.json();
-        const valor = data.results[0].value; // Obtener el último valor
-
-        // Mostrar el valor en la página
-        document.getElementById("valor").textContent = valor;
-      } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("valor").textContent = "Error al cargar el valor";
+    // Manejar mensajes recibidos
+    client.on("message", (topic, message) => {
+      if (topic === "casa/sala/temperatura") {
+        document.getElementById("datos").innerHTML = `Temperatura: ${message}°C`;
       }
-    }
+    });
 
-    // Llamar a la función al cargar la página
-    obtenerValor();
+    // Enviar comando al ESP8266
+    function sendCommand(cmd) {
+      client.publish("casa/sala/luz", cmd);
+    }
   </script>
 </body>
 </html>
