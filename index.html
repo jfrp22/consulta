@@ -1,31 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard ESP8266</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-  <h1>Control de Luz</h1>
-  <button onclick="sendCommand('ON')">Encender LED</button>
-  <button onclick="sendCommand('OFF')">Apagar LED</button>
-  <h2>Temperatura:</h2>
-  <div id="datos"></div>
-
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script>
-    // Conectar al broker MQTT (WebSocket)
-    const client = mqtt.connect("wss://test.mosquitto.org:8081/mqtt");
-
-    // Suscribirse al tópico de temperatura
-    client.subscribe("casa/sala/temperatura");
-
-    // Manejar mensajes recibidos
-    client.on("message", (topic, message) => {
-      if (topic === "casa/sala/temperatura") {
-        document.getElementById("datos").innerHTML = `Temperatura: ${message}°C`;
-      }
-    });
-
-    // Enviar comando al ESP8266
-    function sendCommand(cmd) {
-      client.publish("casa/sala/luz", cmd);
-    }
-  </script>
+  <h1>Datos del ESP8266</h1>
+  <div id="data">Cargando datos...</div>
+  <script src="script.js"></script>
 </body>
 </html>
